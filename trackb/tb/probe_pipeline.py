@@ -1,6 +1,5 @@
 """Final experiment: cached pathology features, CPU feedback, one final Qwen explanation pass."""
 from pathlib import Path
-import gc
 import logging
 import shutil
 import numpy as np
@@ -136,7 +135,7 @@ def explain_probe(c,m,cache,state):
         flush()
     finally:
         if student is not None:
-            del student;gc.collect();__import__('torch').cuda.empty_cache()
+            student.close()
     active=validate_records(read_jsonl(Path(c['feedback_dir'])/'feedback_records.jsonl'),
                             read_jsonl(Path(c['feedback_dir'])/'queries.jsonl'),m)
     probe=PathologyProbe.load(classifier['path']);bank=feature_bank(c,m,cache)

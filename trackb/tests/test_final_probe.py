@@ -99,18 +99,21 @@ def test_final_explanations_reuse_matching_history_only(tmp_path,monkeypatch):
     e=guide.retrieve(row,p['pred'],p['top2']);prior=guide.finish(row,p['pred'],p['top2'],render(e))
     history=Path(c['run_dir'])/'history'
     atomic_json(history/'reference.json',{'model_version':'qwen200'});write_jsonl(history/'qwen_rationales.jsonl',[prior])
-    calls=[];lookup={r.local_path:r for r in rows}
+    calls=[];closed=[];lookup={r.local_path:r for r in rows}
     class Student:
         def __init__(self,*a):pass
+        def close(self):closed.append(True)
         def generate_many(self,paths,prompts,predictions):
             calls.extend(paths)
             return [render(guide.retrieve(lookup[path],pred.loc[lookup[path].tile_id,'pred'],pred.loc[lookup[path].tile_id,'top2'])) for path in paths]
     monkeypatch.setattr('tb.model.Student',Student)
     result=explain_probe(c,m,cache,state)
+    assert closed == [True]
     assert result['n_reused']==1 and row.local_path not in calls
     rr=read_jsonl(folder/f'vlm_rationales_{stage}.jsonl')
     assert len(rr)==9 and all(r['explanation_model_version']=='qwen200' for r in rr)
     before=len(calls);explain_probe(c,m,cache,state);assert len(calls)==before
+    assert closed == [True]  # The resumed pass reuses saved explanations without a model.
     assert all(r['classifier_version']==state['classifier']['model_version'] for r in rr)
 
 

@@ -1,5 +1,6 @@
 """Qwen2-VL backend: assistant-only loss and fixed, summed candidate likelihoods."""
 from pathlib import Path
+import gc
 import numpy as np
 from PIL import Image
 from .common import read_json,atomic_json
@@ -68,6 +69,12 @@ class Student:
             model.config.use_cache=False
         self.model=model
         model.train(trainable)
+
+    def close(self):
+        """Release model weights and the CUDA allocator's unused cache."""
+        del self.model
+        gc.collect()
+        self.torch.cuda.empty_cache()
 
     def inputs(self,image,prompt,answer=None,include_end=True):
         torch=self.torch
