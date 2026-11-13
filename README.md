@@ -26,6 +26,14 @@ On 3,590 evaluation tiles, increasing simulated feedback from 200 to 400 labels
 raised balanced accuracy from 97.96% to 99.35%. Muscle–stroma mutual error fell
 from 5.52% to 1.18%.
 
+![Balanced accuracy rises from 97.96% to 99.35% while muscle–stroma mutual error falls from 5.52% to 1.18% across the recorded 200, 300, and 400-label updates.](trackb/docs/figures/feedback_results.svg)
+
+One recorded sequence with simulated dataset labels and a fixed evaluation
+split. Each stage refits the classifier; the Qwen explanation checkpoint is
+reused. Mutual error uses the 507 muscle or stroma tiles.
+[Plot source and regeneration script](trackb/scripts/plot_feedback_results.py)
+(requires Matplotlib).
+
 The final classifier made **17 errors among 3,590 evaluation tiles**. It used
 16,200 training tiles plus the selected feedback labels. Feedback and evaluation
 came from separate splits of the CRC-VAL-HE-7K domain. Regional explanations
