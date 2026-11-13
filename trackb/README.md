@@ -2,7 +2,16 @@
 
 This guide covers saved-result inspection, local setup, and the classification,
 evidence, and feedback pipeline. For the method and final results, see
-[the project overview](../README.md). All commands below run from `trackb/`.
+[the project overview](../README.md).
+
+Clone this repository and enter the implementation directory:
+
+```bash
+git clone https://github.com/Caesiumatic/patho-distinguisher-vlm_b.git
+cd patho-distinguisher-vlm_b/trackb
+```
+
+The remaining commands run from `trackb/`.
 
 ## Saved results
 
@@ -72,6 +81,9 @@ The default explanation model is Qwen2-VL-2B with language LoRA and frozen visio
 weights. CONCH and MUSK supply whole-tile and regional representations.
 
 ## Experiment documentation
+
+The runbooks record the original team handoff and retain its upstream repository
+URLs. Use the clone command above for this public fork.
 
 - [Final configuration and execution](docs/FINAL_GPU.md)
 - [Windows GPU setup](docs/WINDOWS_RUNBOOK.md)
