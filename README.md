@@ -1,4 +1,4 @@
-# HardPair
+# patho-distinguisher-vlm_b
 
 HardPair connects nine-class pathology classification with regional evidence
 and targeted label feedback. This repository contains the team's Track B
