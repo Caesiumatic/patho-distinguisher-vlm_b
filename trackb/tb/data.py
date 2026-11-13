@@ -28,7 +28,7 @@ N_PER_CLASS, SEED = 2000, 0
 # ---------------------------------------------------------------- local files
 
 def list_tiles(ds: str) -> pd.DataFrame:
-    """All local tiles of a dataset ('100k' or '7k'): columns rel_path, label, fname. Sorted, so deterministic."""
+    """List tiles in class and filename order with rel_path, label, and fname columns."""
     base = RAW / DATASETS[ds]
     rows = [(p.relative_to(RAW).as_posix(), c, p.name)
             for c in CLASSES for p in sorted((base / c).glob("*.tif"))]
@@ -191,7 +191,7 @@ def assert_no_leak(rows: pd.DataFrame, manifest: pd.DataFrame, allow_pool_ids=()
 
 
 def extra_nct(manifest: pd.DataFrame) -> pd.DataFrame:
-    """100K tiles outside the manifest's train sample (for pseudo-labelling). ids: nct_<filename stem>."""
+    """List unused 100K tiles with dataset labels and nct_<filename stem> IDs."""
     big = list_tiles("100k")
     big = big[~big.fname.isin(manifest.fname)].copy()
     big["tile_id"] = "nct_" + big.fname.str.replace(".tif", "", regex=False)
@@ -202,7 +202,7 @@ def extra_nct(manifest: pd.DataFrame) -> pd.DataFrame:
 
 def training_rows(manifest=None, *, include_extra=False, pool_ids=(), log_path=None,
                   feedback=None, extra=None):
-    """Only supervised fit rows and explicit current corrected pool labels enter training."""
+    """Assemble train_fit, registered extra NCT, and explicitly corrected pool rows."""
     m = load_manifest() if manifest is None else manifest
     if 'role' not in m: raise LeakError('Frozen roles are required')
     parts = [m[m.role == 'train_fit'].copy()]

@@ -100,7 +100,7 @@ def fit_probe(c,m,bank,active,cache_identity,previous=None):
                 clf.classes_=np.array(CLASSES);clf.coef_=previous.arrays[name+'_coef'].copy()
                 clf.intercept_=previous.arrays[name+'_intercept'].copy()
             t0=time.perf_counter();clf.fit(xx,y,sample_weight=weights)
-            # Store fixed CLASSES ordering rather than depending on an estimator's implicit order.
+            # Align every head with the shared CLASSES order before saving coefficients.
             order=[list(clf.classes_).index(cl) for cl in CLASSES]
             arrays.update({name+'_mean':scaler.mean_,name+'_scale':scaler.scale_,
                            name+'_coef':clf.coef_[order],name+'_intercept':clf.intercept_[order]})
@@ -118,7 +118,11 @@ def fit_probe(c,m,bank,active,cache_identity,previous=None):
 
 
 def diverse_queries(preds,bank,n,version,hard_fraction=.5,diversity_weight=.25):
-    """Inputs contain predictions/features only. Reserve half for MUS/STR boundary, then global disagreement."""
+    """Select label-blind queries using a MUS/STR quota, disagreement, margin, and diversity.
+
+    ``hard_fraction`` sets the boundary quota (one half by default). Remaining
+    slots use the full pool, including any unfilled boundary quota.
+    """
     if 'label' in preds:raise ValueError('Query selection must not receive true labels')
     n=min(n,len(preds))
     if n<=0:return []

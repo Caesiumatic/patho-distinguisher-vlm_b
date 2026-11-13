@@ -1,7 +1,7 @@
 # Final Track B experiment: pathology classification with reusable Qwen explanations
 
 Continue the completed `followup_4080_v1` run from commit `096fa64`. The final recipe is
-`configs/final_4080.yaml`. It reuses all 200 real saved simulated-feedback records, their query
+`configs/final_4080.yaml`. It reuses all 200 saved simulated-dataset-feedback records, their query
 provenance, the trained Qwen feedback checkpoint, the calibrated region guide and teacher caches.
 It trains a new **CONCH + MUSK whole-tile classifier**, then collects only 200 additional labels
 at cumulative counts 300 and 400. There is no new R1/R2/R3 training or zero-shot run.
@@ -32,8 +32,9 @@ The final classifier's prediction and runner-up drive region retrieval and the e
 `fb_200` checkpoint writes the corresponding explanation. Parent explanations are reused when
 Qwen version, guide version, prediction and rival match. Only remaining supported tiles require
 Qwen generation. The system records **classifier_version** and **explanation_model_version**
-separately: this improves the system's classifier; it is not additional Qwen fine-tuning.
-Insufficient evidence remains explicit; generated student text and teacher fallback stay distinct.
+separately so each prediction identifies the updated classifier and reused Qwen
+checkpoint. Insufficient evidence remains explicit; generated student text and
+teacher fallback retain their own provenance.
 
 ## Execute once on the teammate Windows laptop
 

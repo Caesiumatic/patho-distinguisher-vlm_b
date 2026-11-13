@@ -1,7 +1,7 @@
 """Retrieve discriminative regional descriptors and calibrate ordered class pairs.
 
-Teacher score centering uses train_fit; thresholds use train_dev. No new GPU
-encoding is needed. Explanations expose retrieval provenance and missing support.
+Teacher score centering uses train_fit; thresholds use train_dev. Both reuse
+cached region scores. Explanations record retrieval provenance and missing support.
 """
 from pathlib import Path
 import logging
@@ -33,7 +33,7 @@ class RegionGuide:
         return (scores - np.asarray(stats['mean'])) / np.asarray(stats['std'])
 
     def choose(self, conch, musk, label, rival):
-        """Select the same crop for support and rival, using relative rather than absolute support."""
+        """Select a crop by its normalized support–rival margin across both encoders."""
         z = self.normalized('conch', conch)
         aux = self.normalized('musk', musk)
         allowed = self.artifact['usable_descriptors']
@@ -124,7 +124,7 @@ def fit_guide(fit,dev,cache,minimum_auc=.55,musk_weight=.15):
                 observations[label,other].append((e['calibrated_margin'],e['margin']>0,positive))
     for (label,rival),values in observations.items():
         v=np.asarray(values);positive=v[:,2].astype(bool);raw_ok=v[:,1].astype(bool)
-        # Optimize pair discrimination, rather than calling nine independent class hypotheses positives.
+        # Calibrate each ordered class pair with true-label and reversed-label examples.
         candidates=np.unique(np.r_[0.,np.maximum(0,np.quantile(v[:,0],np.linspace(0,1,101)))])
         records=[]
         for t in candidates:

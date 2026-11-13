@@ -1,7 +1,8 @@
 # HardPair
 
-Track B code for the HardPair team project: pathology image classification,
-regional explanations, and feedback-based classifier updates.
+HardPair connects nine-class pathology classification with regional evidence
+and targeted label feedback. This repository contains the team's Track B
+implementation, review application, and recorded evaluation results.
 
 ## Approach
 
@@ -15,9 +16,9 @@ The workflow combines three components:
   diversity select examples for additional labels, with extra coverage for
   muscle–stroma confusion.
 
-The classifier and explanation model serve different roles. Feedback updates
-the classifier, while the explanation model connects its predictions to
-regional evidence for review.
+Feedback refits the classifier on its training set and accumulated pool labels.
+The final experiment keeps the Qwen explanation checkpoint fixed and retrieves
+regional evidence for each updated prediction and alternative class.
 
 ## Results
 
@@ -25,9 +26,12 @@ On 3,590 evaluation tiles, increasing simulated feedback from 200 to 400 labels
 raised balanced accuracy from 97.96% to 99.35%. Muscle–stroma mutual error fell
 from 5.52% to 1.18%.
 
-The classifier also used 16,200 training tiles. Feedback and evaluation came
-from separate splits of the CRC-VAL-HE-7K domain. Regional explanations passed
-the recorded format and grounding checks for 54.6% of evaluation tiles.
+The final classifier made **17 errors among 3,590 evaluation tiles**. It used
+16,200 training tiles plus the selected feedback labels. Feedback and evaluation
+came from separate splits of the CRC-VAL-HE-7K domain. Regional explanations
+passed the recorded format and grounding checks for 1,959 tiles (54.6%); these
+checks measure agreement with retrieved evidence, rather than expert-annotated
+region accuracy.
 
 ## Review workflow
 

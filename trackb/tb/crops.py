@@ -1,4 +1,4 @@
-"""Deterministic 224px geometry; no undocumented stochastic coordinate transforms."""
+"""Map a fixed 3×3 grid of overlapping 112px crops to original-image coordinates."""
 from PIL import Image
 
 def regions(size=(224, 224)):

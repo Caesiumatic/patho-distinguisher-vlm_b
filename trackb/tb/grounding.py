@@ -13,7 +13,7 @@ def evidence(scores,descriptors,label,rival=None):
         if rival is None:
             rival=max((c for c in CLASSES if c!=label),key=lambda c:float(scores[:,[i for i,d in enumerate(descriptors) if d['label']==c]].max()))
     other=[i for i,d in enumerate(descriptors) if d['label']==rival]
-    # strongest supporting crop; rival is evaluated on the SAME crop
+    # Compare support and rival descriptors on the crop with the strongest support.
     r,k=np.unravel_index(scores[:,own].argmax(),(9,len(own)));a=own[k]
     b=max(other,key=lambda j:scores[r,j])
     return {'label':label,'rival':rival,'region':f'{r//3},{r%3}', 'support':descriptors[a]['text'],
@@ -54,7 +54,8 @@ def calibrate(dev,cache,c):
         table.append({'threshold':float(t),'accepted':len(accepted),'precision':sum(accepted)/len(accepted) if accepted else 0.0,
                       'true_accepted':sum(accepted)})
     valid=[r for r in table if r['accepted'] and r['precision']>=c['cache']['minimum_dev_precision']]
-    # Explicitly record fallback; this is a class-match proxy, not expert region quality.
+    # Select the threshold with a class-match proxy; record when its precision constraint is unmet.
+    # The proxy uses tile labels, not expert region annotations.
     best=max(valid or table,key=lambda r:(r['true_accepted'] if valid else r['precision'],r['threshold']))
     return {'threshold':best['threshold'],'calibration':'train_dev class-match proxy',
             'precision_constraint_met':bool(valid),'n_dev':len(dev),'trials':table}

@@ -1,7 +1,8 @@
 # Track B implementation
 
-For the method and final results, see [the project overview](../README.md).
-All commands below run from `trackb/`.
+This guide covers saved-result inspection, local setup, and the classification,
+evidence, and feedback pipeline. For the method and final results, see
+[the project overview](../README.md). All commands below run from `trackb/`.
 
 ## Saved results
 
@@ -54,10 +55,12 @@ The Streamlit application reads model outputs and image paths from that run.
 The checked-in report bundle contains metrics and provenance; runtime weights,
 embedding caches, and images remain external.
 
-Stages include `prepare`, `cache`, `evidence`, `probe`, `explain`, `feedback`,
-and `report`; `zeroshot`, `r1`, `r2`, and `r3` cover earlier model-training runs.
-The final experiment used feature caching, linear-probe updates, cumulative
-feedback, and the existing Qwen checkpoint.
+The final experiment uses `prepare`, `cache`, `probe`, `feedback`, `explain`,
+and `report`: cache whole-tile features, fit and update the linear probe, then
+produce explanations with the inherited Qwen checkpoint and region guide.
+`evidence` calibrates the region guide; `zeroshot`, `r1`, `r2`, and `r3` support
+the earlier model-training workflow. See the [final run sequence](docs/FINAL_GPU.md)
+for stage order and required inherited artifacts.
 
 ## Data and models
 
